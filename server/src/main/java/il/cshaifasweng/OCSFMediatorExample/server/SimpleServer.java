@@ -5,8 +5,14 @@ import il.cshaifasweng.OCSFMediatorExample.server.ocsf.AbstractServer;
 import il.cshaifasweng.OCSFMediatorExample.server.ocsf.ConnectionToClient;
 import il.cshaifasweng.OCSFMediatorExample.server.ocsf.SubscribedClient;
 
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+
+
+
 import java.io.IOException;
 import java.util.ArrayList;
+
 
 public class SimpleServer extends AbstractServer {
 	private static ArrayList<SubscribedClient> SubscribersList = new ArrayList<>();
@@ -49,17 +55,35 @@ public class SimpleServer extends AbstractServer {
 			}
 			else if(request.startsWith("send Submitters IDs")){
 				//add code here to send submitters IDs to client
+				message.setMessage("324056324, 214052250");
+				client.sendToClient(message);
 			}
 			else if (request.startsWith("send Submitters")){
 				//add code here to send submitters names to client
+				message.setMessage("Adan, Zinab");
+				client.sendToClient(message);
+
 			}
 			else if (request.equals("what’s the time?")) {
 				//add code here to send the time to client
+				DateTimeFormatter tf= DateTimeFormatter.ofPattern("HH:mm:ss");
+				LocalDateTime t=message.getTimeStamp();
+				message.setMessage(t.format(tf));
+				client.sendToClient(message);
 			}
 			else if (request.startsWith("multiply")){
 				//add code here to multiply 2 numbers received in the message and send result back to client
 				//(use substring method as shown above)
 				//message format: "multiply n*m"
+				int n,m;
+				String[] m1 = request.split(" ");
+				int index = m1[1].indexOf("*");
+				n = Integer.parseInt(m1[1].substring(0, index));
+				m = Integer.parseInt(m1[1].substring(index+1));
+				int result = n * m;
+				message.setMessage(Integer.toString(result));
+				client.sendToClient(message);
+
 			}else{
 				//add code here to send received message to all clients.
 				//The string we received in the message is the message we will send back to all clients subscribed.
@@ -67,6 +91,8 @@ public class SimpleServer extends AbstractServer {
 					// message received: "Good morning"
 					// message sent: "Good morning"
 				//see code for changing submitters IDs for help
+				message.setMessage(request);
+				sendToAllClients(message);
 			}
 		} catch (IOException e1) {
 			e1.printStackTrace();
